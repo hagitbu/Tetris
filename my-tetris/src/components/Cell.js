@@ -3,10 +3,13 @@ import { StyledCell } from './styledComponents/StyledCell';
 import { Tetrominos } from '../tetrominos';
 
 const Cell = ({ type }) =>{
+    // console.log('hi isssssfdf');
+    // console.log(type);
+
+    // console.log(Tetrominos[`${type}`].color);
     return(
         <>
-        {console.log('what?????')}
-        <StyledCell type={type} color={Tetrominos[type].color}></StyledCell>
+        <StyledCell type={type} color={Tetrominos[`${type}`].color}></StyledCell>
         </>
     )
 }
