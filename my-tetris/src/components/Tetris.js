@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 //components
 import Board from './Board';
-import StartButton from './StartButton';
+import NewGameButton from './NewGameButton';
 import GameStatus from './GameStatus';
 //styled components
 import { StyledTetris } from './styledComponents/StyledTetris';
@@ -10,30 +10,33 @@ import { useBoard } from '../hooks/useBoard';
 import { usePlayer } from '../hooks/usePlayer';
 //others
 import { getRandomTetromino } from '../tetrominos';
-import { createBoard } from '../gameEssentials';
+import { createBoard, outOfBounds } from '../gameEssentials';
 
 
 const Tetris = () => {
   const [gameOver, setGameOver] = useState(false);
-  const [player, setPlayer, updatePosition] = usePlayer();
-  const [board, setBoard] = useBoard(player);
-
-
-  console.log(player);
+  const [player, setPlayer, updatePosition, newTetroOnBoard] = usePlayer();
+  const [board, setBoard] = useBoard( player, newTetroOnBoard);
 
   const newGame = () =>{
     setBoard(createBoard());
+    setGameOver(false);
+    newTetroOnBoard();
   }
 
   const moveTetromino = (e) => {
-    if(e.keyCode === 37){ //moving left 
+    if(e.keyCode === 37 && !outOfBounds(player,board, -1)){ //moving left 
       updatePosition(-1,0);
     }
-    else if(e.keyCode === 39){ //moving right 
+    else if(e.keyCode === 39 && !outOfBounds(player,board, 1)){ //moving right 
       updatePosition(1,0);
     }
     else if(e.keyCode === 40){ //moving down 
-      updatePosition(0,1);
+      if(!outOfBounds(player,board, 0, 1)){
+        updatePosition(0,1);
+      }else{
+        updatePosition(0, 0, true);
+      }
     }
   }
 
@@ -44,7 +47,7 @@ const Tetris = () => {
     tabIndex="0"
     onKeyDown={e => moveTetromino(e)}
     >
-      <h1>hello this is going to be a tetris game</h1>
+      <h1 style= {{color:'white', paddingTop:'0px',textAlign: 'center' }}>hello this is going to be a tetris game</h1>
       <Board board={board} />
       <aside>
         {gameOver ? (<GameStatus text='Game Over' />) :
@@ -54,7 +57,7 @@ const Tetris = () => {
               <GameStatus text='Level' />
             </div>)
         }
-        <StartButton onCick={newGame} />
+        <NewGameButton onClickFunc={newGame} />
       </aside>
     </StyledTetris>
   );
