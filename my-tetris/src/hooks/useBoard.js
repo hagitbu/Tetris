@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createBoard } from "../gameEssentials";
 
-export const useBoard = (player, newTetroOnBoard) => {
+export const useBoard = (currTetro, newTetroOnBoard) => {
     const [board, setBoard] = useState(createBoard());
 
     useEffect(() => {
@@ -12,10 +12,10 @@ export const useBoard = (player, newTetroOnBoard) => {
             const updatedBoard = prevBoard.map(row => row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)));
 
             //add the current tetromino to the board
-            player.tetromino.map((row, indexRow) => row.map((cell, indexCol) => {
+            currTetro.tetromino.map((row, indexRow) => row.map((cell, indexCol) => {
                 if (cell !== 0) { //if its a tetromino letter
-                    updatedBoard[player.position.y + indexRow][player.position.x + indexCol] =
-                    [cell, `${player.unifiedWithBoard ? 'unified' : 'clear'}`];
+                    updatedBoard[currTetro.position.y + indexRow][currTetro.position.x + indexCol] =
+                    [cell, `${currTetro.unifiedWithBoard ? 'unified' : 'clear'}`];
                 }
             }));
 
@@ -23,11 +23,11 @@ export const useBoard = (player, newTetroOnBoard) => {
         }
         setBoard(prevBoard => updateBoard(prevBoard))  //setting the board to the updated one
 
-        if(player.unifiedWithBoard){
+        if(currTetro.unifiedWithBoard){ //if the prev tetromino unified with the board, show a new tetromino
             newTetroOnBoard();
         }
 
-    }, [player])
+    }, [currTetro])
 
     return [board, setBoard];
 
