@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 //components
 import Board from './Board';
 import NewGameButton from './NewGameButton';
@@ -8,58 +8,92 @@ import { StyledTetris } from './styledComponents/StyledTetris';
 //hooks
 import { useBoard } from '../hooks/useBoard';
 import { useTetro } from '../hooks/useTetro';
+import { useInterval } from '../hooks/useInterval';
 //others
 import { createBoard, outOfBounds } from '../gameEssentials';
 
 
 const Tetris = () => {
-  const [gameOver, setGameOver] = useState(false);
-  const [currTetro, setCurrTetro, updatePosition, newTetroOnBoard, rotateTetro] = useTetro();
-  const [board, setBoard] = useBoard(currTetro, newTetroOnBoard);
+
+  const [currTetro, updatePosition, newTetroOnBoard, rotateTetro] = useTetro();
+  const [board, setBoard, clearedRowsCount, setClearedRowsCount, gameOver, setGameOver, dropSpeed, setDropSpeed, level, setLevelAndSpeed, score, setScore] = useBoard(currTetro, newTetroOnBoard);
 
   const newGame = () => {
     setBoard(createBoard());
     setGameOver(false);
     newTetroOnBoard();
+    setClearedRowsCount(0);
+    setLevelAndSpeed(0);
+    setScore(0);
   }
 
+  const keyUp = ({ keyCode }) => {
+    if (!gameOver) {
+      // Activate the interval again when user releases down arrow.
+      if (keyCode === 40) {
+        setLevelAndSpeed(clearedRowsCount);
+      }
+    }
+  };
+
+
   const moveTetromino = (e) => {
-    if (e.keyCode === 37 && !outOfBounds(currTetro, board, -1)) { //moving left 
-      updatePosition(-1, 0);
-    }
-    else if (e.keyCode === 38){ // up key - rotate tetromino
-      rotateTetro(board);
-    }
-    else if (e.keyCode === 39 && !outOfBounds(currTetro, board, 1)) { //moving right 
-      updatePosition(1, 0);
-    }
-    else if (e.keyCode === 40) { //moving down 
-      if (!outOfBounds(currTetro, board, 0, 1)) {
-        updatePosition(0, 1);
-      } else {
-        updatePosition(0, 0, true);
+    e.preventDefault();
+    if (!gameOver) {
+      if (e.keyCode === 37 && !outOfBounds(currTetro, board, -1)) { //moving left 
+        updatePosition(-1, 0);
+      }
+      else if (e.keyCode === 38) { // up key - rotate tetromino
+        rotateTetro(board);
+      }
+      else if (e.keyCode === 39 && !outOfBounds(currTetro, board, 1)) { //moving right 
+        updatePosition(1, 0);
+      }
+      else if (e.keyCode === 40) { //moving down 
+        setDropSpeed(null);
+        moveDown();
       }
     }
   }
+
+  const moveDown = () => {
+    if (!outOfBounds(currTetro, board, 0, 1)) {
+      updatePosition(0, 1);
+    } else {
+      updatePosition(0, 0, true);
+    }
+  }
+
+  useInterval(() => { // activating the moving down interval
+    moveDown();
+  }, dropSpeed)
+
 
   return (
     <StyledTetris
       role="button"
       tabIndex="0"
       onKeyDown={e => moveTetromino(e)}
-    >
-      <h1 style={{ color: 'white', paddingTop: '0px', textAlign: 'center' }}>hello this is going to be a tetris game</h1>
-      <Board board={board} />
-      <aside>
-        {gameOver ? (<GameStatus text='Game Over' />) :
-          (<div>
-            <GameStatus text='Score' />
-            <GameStatus text='Rows' />
-            <GameStatus text='Level' />
-          </div>)
-        }
-        <NewGameButton onClickFunc={newGame} />
-      </aside>
+      onKeyUp={keyUp}>
+
+      <h1 style={{ color: 'white', marginTop: '3vh', textAlign: 'center', textShadow: '4px 4px 19px rgba(150, 150, 152, 1)' }}>TETRIS</h1>
+      <div style={{position:'relative', width:'20vw', margin:'auto'}}> 
+        <Board board={board} />
+        <div style={{ width: 'fit-content', position: 'absolute', top:'0', left:'-250px'}}>
+          <aside style={{ width: 'fit-content' }}>
+          {gameOver ? (<GameStatus text='Game Over' />) :
+              (<></>)
+            }
+          <div>
+                <GameStatus text='Score' value={score} />
+                <GameStatus text='Rows' value={clearedRowsCount} />
+                <GameStatus text='Level' value={level} />
+              </div>
+
+            <NewGameButton onClickFunc={newGame} />
+          </aside>
+        </div>
+      </div>
     </StyledTetris>
   );
 }

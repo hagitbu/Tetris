@@ -59,6 +59,6 @@ export const useTetro = () => {
         }
     }
 
-    return [currTetro, setCurrTetro, updatePosition, newTetroOnBoard, rotateTetro];
+    return [currTetro, updatePosition, newTetroOnBoard, rotateTetro];
 
 }

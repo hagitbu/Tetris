@@ -18,6 +18,7 @@ export const outOfBounds = (currTetro, board, dirX, dirY = 0) => {
     for (let y = 0; y < currTetro.tetromino.length; y++) {
         for (let x = 0; x < currTetro.tetromino[0].length; x++) {
             if (currTetro.tetromino[y][x] !== 0) { //checking each tetromino cell (with a tetromino, not 0) if its out of bounds 
+
                 if (currTetro.position.y + dirY + y > boardHeight - 1 //checking the bottom border
                     ||
                     currTetro.position.x + dirX + x > boardWidth - 1 //checking the right border
@@ -26,6 +27,7 @@ export const outOfBounds = (currTetro, board, dirX, dirY = 0) => {
                     ||
                     board[currTetro.position.y + dirY + y][currTetro.position.x + dirX + x][1] !== 'clear'
                 ) {
+                    
                     return true; //out of bounds
                 }
             }
