@@ -11,8 +11,8 @@ export const StyledBoard = styled.div`
     grid-template-columns: repeat(${props => props.width}, 1fr );
     max-width: 20vw;
     min-width: 150px;
-    background: #333;
+    background: ${props => props.boardBg};
     grid-gap: 1px;
-    border: 4px solid #888;
+    border: 4px solid ${props => props.boardBorder};
 `
 

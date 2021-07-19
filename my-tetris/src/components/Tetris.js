@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useContext } from 'react';
 //components
 import Board from './Board';
-import NewGameButton from './NewGameButton';
+import GameButton from './GameButton';
 import GameStatus from './GameStatus';
 //styled components
 import { StyledTetris } from './styledComponents/StyledTetris';
@@ -11,12 +11,17 @@ import { useTetro } from '../hooks/useTetro';
 import { useInterval } from '../hooks/useInterval';
 //others
 import { createBoard, outOfBounds } from '../gameEssentials';
+import {ThemeContext} from '../contexts/ThemeContext'
 
 
 const Tetris = () => {
 
   const [currTetro, updatePosition, newTetroOnBoard, rotateTetro] = useTetro();
   const [board, setBoard, clearedRowsCount, setClearedRowsCount, gameOver, setGameOver, dropSpeed, setDropSpeed, level, setLevelAndSpeed, score, setScore] = useBoard(currTetro, newTetroOnBoard);
+
+  const context = useContext(ThemeContext);
+  const { isLightTheme, light, dark, toggleTheme } = context;
+  const theme = isLightTheme ? light : dark;
 
   const newGame = () => {
     setBoard(createBoard());
@@ -70,7 +75,8 @@ const Tetris = () => {
 
 
   return (
-    <StyledTetris
+    <StyledTetris 
+      bgImage = {theme.bgImage}
       role="button"
       tabIndex="0"
       onKeyDown={e => moveTetromino(e)}
@@ -90,10 +96,14 @@ const Tetris = () => {
                 <GameStatus text='Level' value={level} />
               </div>
 
-            <NewGameButton onClickFunc={newGame} />
+            <GameButton onClickFunc={newGame} text='New Game' />
+
           </aside>
         </div>
+        <GameButton style ={{position:'absolute', top:0, left:'22vw'}} onClickFunc={toggleTheme} text='change mode'/>
+
       </div>
+
     </StyledTetris>
   );
 }
