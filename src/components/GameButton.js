@@ -13,14 +13,15 @@ const StyledNewGameButton = styled.button`
     font-family: Pixel, Arial, Helvetica, sans-serif;
     cursor: pointer;
 `;
-const GameButton = ({ onClickFunc, text, style}) => {
+
+const GameButton = ({ onClickFunc, text, style }) => {
     const context = useContext(ThemeContext);
     const { isLightTheme, light, dark } = context;
     const theme = isLightTheme ? light : dark;
-    
+
     return (
-        <StyledNewGameButton 
-        style = { style ? style: {} }
+        <StyledNewGameButton
+            style={style ? style : {}}
             newGameBg={theme.newGameBg}
             onClick={onClickFunc} >{text}</StyledNewGameButton>
     )
